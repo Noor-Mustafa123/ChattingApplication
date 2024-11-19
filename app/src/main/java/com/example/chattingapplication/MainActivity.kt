@@ -9,8 +9,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chattingapplication.Screens.AllChatScreenComposable
 import com.example.chattingapplication.Screens.LoginScreenComposable
 import com.example.chattingapplication.Screens.SignUpScreenComposable
+import com.example.chattingapplication.Screens.StatusScreenComposable
+import com.example.chattingapplication.Screens.UserProfileScreenComposable
 import com.example.chattingapplication.ViewModels.ApplicationViewModel
 import com.example.chattingapplication.ui.theme.ChattingApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -61,8 +64,17 @@ fun applicationNavigation()  {
         composable(route = ScreenRoutes.SignInRoute.route){
             SignUpScreenComposable(navController,viewModel);
         }
+        composable(route = ScreenRoutes.ChatListRoute.route){
+            AllChatScreenComposable(navController,viewModel)
+        }
         composable(route = ScreenRoutes.LoginRoute.route){
             LoginScreenComposable(navController,viewModel);
+        }
+        composable(route = ScreenRoutes.ProfileRoute.route){
+            UserProfileScreenComposable(navController,viewModel);
+        }
+        composable(route = ScreenRoutes.StatusListRoute.route){
+            StatusScreenComposable(viewModel,navController);
         }
 
 

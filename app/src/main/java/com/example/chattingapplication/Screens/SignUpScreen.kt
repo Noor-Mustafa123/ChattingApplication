@@ -1,11 +1,8 @@
 package com.example.chattingapplication.Screens
 
-import android.provider.CalendarContract.Colors
 import android.util.Log
-import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,8 +11,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -34,13 +28,16 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.chattingapplication.R
 import com.example.chattingapplication.ScreenRoutes
+import com.example.chattingapplication.Utilites.UtilityComposables.CheckUserSignedInStatus
 import com.example.chattingapplication.Utilites.UtilityComposables.CommonProgressBar
 import com.example.chattingapplication.ViewModels.ApplicationViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 
 @Composable
 fun SignUpScreenComposable(navController: NavController, viewModel: ApplicationViewModel) {
+
+        CheckUserSignedInStatus(viewModel,navController);
+
 
     var nameState = remember() {
         mutableStateOf(TextFieldValue())
@@ -107,7 +104,7 @@ fun SignUpScreenComposable(navController: NavController, viewModel: ApplicationV
         })
 
         Button(onClick = {
-//            forwarded the saved state data to the view model
+// * forwarded the saved state data to the view model
             viewModel.signUpUser(
                 name = nameState.value.text,
                 number = numberState.value.text,
@@ -129,7 +126,7 @@ fun SignUpScreenComposable(navController: NavController, viewModel: ApplicationV
 
     }
 //  ???????  when will the function be reset that the progress bar will be shown and when will it run again to check if the progress bar need to be removed now ??????
-    if(viewModel.mutableStateOfInProgressStatus.value){
+    if(viewModel.inProgress.value){
 //        show progress bar composable
         println("check has been triggered")
         CommonProgressBar();
