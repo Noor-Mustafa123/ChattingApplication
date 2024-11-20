@@ -20,13 +20,13 @@ import com.example.chattingapplication.R
 import com.example.chattingapplication.ScreenRoutes
 
 
-// * Were creating an enum of the eachNavigation item because we want to loop through each one by one to check for the status that if the screen is open when the function BottomNavigationMenu is called
+// * Were creating an enum of the eachNavigation item b ecause we want to loop through each one by one to check for the status that if the screen is open when the function BottomNavigationMenu is called
 
 //? why do we use sealed classes when we have enums?
 enum class BottomNavigationItem(val image: Int, val screenRoutes: ScreenRoutes) {
-    ALLCHATLIST(R.drawable.GxIconPng, ScreenRoutes.ChatListRoute),
-    STATUSLIST(R.drawable.sofa, ScreenRoutes.StatusListRoute),
-    PROFILEPAGE(R.drawable.GxIconPng, ScreenRoutes.ProfileRoute)
+    ALLCHATLIST(R.drawable.chat, ScreenRoutes.ChatListRoute),
+    STATUSLIST(R.drawable.status, ScreenRoutes.StatusListRoute),
+    PROFILEPAGE(R.drawable.user, ScreenRoutes.ProfileRoute)
 }
 
 
@@ -39,7 +39,7 @@ fun BottomNavigationMenu(navController: NavController, selectedScreen: BottomNav
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(top = 4.dp)
-            .background(color = Color.Gray)
+            .background(color = Color.White)
     ) {
         for (item in BottomNavigationItem.values()) {
             Image(

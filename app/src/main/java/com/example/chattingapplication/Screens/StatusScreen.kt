@@ -28,7 +28,7 @@ fun StatusScreenComposable(viewModel: ApplicationViewModel, navController: NavCo
 
 //        This is a different ui block
         BottomNavigationMenu(
-            selectedScreen = BottomNavigationItem.ALLCHATLIST,
+            selectedScreen = BottomNavigationItem.STATUSLIST,
             navController = navController
         )
 
@@ -38,28 +38,3 @@ fun StatusScreenComposable(viewModel: ApplicationViewModel, navController: NavCo
 
 }
 
-
-//       This will be a different ui block
-@Composable
-fun ProfileScreenContent() {
-
-    var nameState = mutableStateOf()
-
-
-    Column {
-
-        OutlinedTextField(value = nameState.value, onValueChange = {
-            nameState.value = it
-            println(nameState.value);
-        }, modifier = Modifier.padding(8.dp), label = {
-            Text(text = "Name")
-        })
-        OutlinedTextField(value = numberState.value, onValueChange = {
-            numberState.value = it
-            println(numberState.value);
-        }, modifier = Modifier.padding(8.dp), label = {
-            Text(text = "Phone Number")
-        })
-
-    }
-}
