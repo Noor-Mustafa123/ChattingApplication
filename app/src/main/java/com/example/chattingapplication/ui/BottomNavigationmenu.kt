@@ -24,9 +24,9 @@ import com.example.chattingapplication.ScreenRoutes
 
 //? why do we use sealed classes when we have enums?
 enum class BottomNavigationItem(val image: Int, val screenRoutes: ScreenRoutes) {
-    ALLCHATLIST(R.drawable.chat, ScreenRoutes.ChatListRoute),
-    STATUSLIST(R.drawable.status, ScreenRoutes.StatusListRoute),
-    PROFILEPAGE(R.drawable.user, ScreenRoutes.ProfileRoute)
+    ALLCHATLIST(image = R.drawable.chat, screenRoutes = ScreenRoutes.ChatListRoute),
+    STATUSLIST(image = R.drawable.status, screenRoutes = ScreenRoutes.StatusListRoute),
+    PROFILEPAGE(image = R.drawable.user, screenRoutes = ScreenRoutes.ProfileRoute)
 }
 
 

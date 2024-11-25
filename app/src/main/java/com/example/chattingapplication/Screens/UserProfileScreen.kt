@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -49,38 +50,47 @@ fun UserProfileScreenComposable(navController: NavController, viewModel: Applica
         CommonProgressBar()
     } else {
 
-        val userData = viewModel.mutableUserDataObject.value;
-        var name by rememberSaveable {
-            mutableStateOf(userData?.name ?: "")
-        }
-        var number by rememberSaveable {
-            mutableStateOf(userData?.number ?: "")
-        }
+        Scaffold(
+            bottomBar = {
+                BottomNavigationMenu(
+                    selectedScreen = BottomNavigationItem.PROFILEPAGE,
+                    navController = navController
+                )
+            }
+        ) { innerPadding ->
+            // Screen content with padding
+            Column(modifier = Modifier.padding(innerPadding)) {
+                val userData = viewModel.mutableUserDataObject.value;
+                var name by rememberSaveable {
+                    mutableStateOf(userData?.name ?: "")
+                }
+                var number by rememberSaveable {
+                    mutableStateOf(userData?.number ?: "")
+                }
 
-        ProfileScreenContent(
-            name = name,
-            number = number,
-            atBack = {
-                navController.navigate(route = ScreenRoutes.ChatListRoute.route)
-            },
-            atSave = {
-                viewModel.createOrUpdateUser(name = name, number = number)
-            },
-            viewModel = viewModel,
-            modifier = Modifier
-                .padding(8.dp)
-                .verticalScroll(rememberScrollState()),
-            onNameChange = { name = it },
-            onNumberChange = { name = it },
-        ) {
-            viewModel.logout();
-            navController.navigate(route = ScreenRoutes.ChatListRoute.route)
-        }
+                ProfileScreenContent(
+                    name = name,
+                    number = number,
+                    atBack = {
+                        navController.navigate(route = ScreenRoutes.ChatListRoute.route)
+                    },
+                    atSave = {
+                        viewModel.createOrUpdateUser(name = name, number = number)
+                    },
+                    viewModel = viewModel,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .verticalScroll(rememberScrollState()),
+                    onNameChange = { name = it },
+                    onNumberChange = { name = it },
+                ) {
+                    viewModel.logout();
+                    navController.navigate(route = ScreenRoutes.ChatListRoute.route)
+                }
 
-        BottomNavigationMenu(
-            selectedScreen = BottomNavigationItem.PROFILEPAGE,
-            navController = navController
-        )
+
+            }
+        }
 
 
     }
@@ -121,14 +131,14 @@ fun ProfileScreenContent(
         DividerCommon();
         ProfilePicture(viewModel = viewModel, imageURL = imageUrl)
 
-        DividerCommon()
+//        DividerCommon()
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Name", modifier = Modifier.width(100.dp))
+            Text(text = "Name", modifier = Modifier.width(100.dp).padding(top = 20.dp))
             TextField(
                 value = name, onValueChange = onNameChange, colors = TextFieldDefaults.colors(
                     focusedTextColor = Color.Black,
@@ -141,7 +151,7 @@ fun ProfileScreenContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp),
+                .padding(4.dp, bottom = 50.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = "Number", modifier = Modifier.width(100.dp))
@@ -158,7 +168,7 @@ fun ProfileScreenContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.dp, top = 5.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(text = "Logout", modifier = Modifier.clickable {
@@ -181,25 +191,28 @@ fun ProfilePicture(imageURL: String?, viewModel: ApplicationViewModel) {
             viewModel.uploadProfileImage(uri)
         }
     }
-    Box(modifier = Modifier.height(intrinsicSize = IntrinsicSize.Min)) {
+
+    Box(modifier = Modifier.height(intrinsicSize = IntrinsicSize.Min).padding(top = 8.dp)) {
         Column(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(8.dp, bottom = 15.dp)
                 .fillMaxSize()
-                .padding(8.dp)
                 .clickable {
                     launcher.launch("image/*")
-                }, horizontalAlignment = Alignment.CenterHorizontally
+                }, horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Card(
                 shape = CircleShape, modifier = Modifier
                     .padding(8.dp)
                     .size(100.dp)
             ) {
+                println(imageURL.toString())
                 ImageCommon(imageURL)
             }
+            Text(text = "Change Profile Picture")
         }
-        Text(text = "Change Profile Picture")
+
+
     }
     if (viewModel.inProgress.value) {
         CommonProgressBar();

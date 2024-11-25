@@ -6,6 +6,13 @@ plugins {
     id("com.google.devtools.ksp")
     alias(libs.plugins.google.gms.google.services)
 
+        kotlin("plugin.serialization") version "2.0.21"
+
+
+
+
+
+
 }
 
 android {
@@ -44,6 +51,10 @@ android {
 }
 
 dependencies {
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.0.2"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.ktor:ktor-client-android:3.0.1")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.coil.compose)
@@ -69,6 +80,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 
     dependencies {
         implementation (libs.hilt.android)

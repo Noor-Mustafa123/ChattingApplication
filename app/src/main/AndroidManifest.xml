@@ -17,6 +17,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.ChattingApplication">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,5 +27,5 @@
             </intent-filter>
         </activity>
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
