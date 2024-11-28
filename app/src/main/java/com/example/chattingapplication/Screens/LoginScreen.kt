@@ -89,6 +89,7 @@ fun LoginScreenComposable(navController: NavController, viewModel: ApplicationVi
         Button(onClick = {
 
            viewModel.loginUser(emailState.value.text,passwordState.value.text)
+            navController.navigate(ScreenRoutes.ChatListRoute.route);
 
         }, modifier = Modifier.padding(16.dp)) {
             Text(text = "Sign Up")

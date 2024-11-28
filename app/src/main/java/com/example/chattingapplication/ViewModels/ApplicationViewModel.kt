@@ -2,9 +2,12 @@ package com.example.chattingapplication.ViewModels
 
 import android.net.Uri
 import android.util.Log
-import com.google.firebase.firestore.ktx.toObjects as toObjectsKtx
+import androidx.activity.result.launch
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.semantics.error
+import androidx.concurrent.futures.await
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import com.example.chattingapplication.Events.Event
 import com.example.chattingapplication.Models.ChatData
 import com.example.chattingapplication.Models.ChatUser
@@ -20,13 +23,21 @@ import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.toObject
-import com.google.firebase.firestore.toObjects
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.storage.storage
+import io.github.jan.supabase.storage.upload
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.internal.wait
 import java.util.Calendar
 import java.util.UUID
 import javax.inject.Inject
-import com.google.firebase.firestore.ktx.toObjects
+import com.google.firebase.firestore.ktx.toObjects as toObjectsKtx
 
 // QUESTION why don't we do this error handling and the authentication of data in the model side why do it in the viewModel ? which is used for data transfer?
 
@@ -42,7 +53,8 @@ import com.google.firebase.firestore.ktx.toObjects
 class ApplicationViewModel @Inject constructor(
     val fireBaseUser: FirebaseAuth,
     val fireStoredb: FirebaseFirestore,
-    val firebaseImageStorage: FirebaseStorage
+    val firebaseImageStorage: FirebaseStorage,
+    val supabaseClient: SupabaseClient
 ) : ViewModel() {
 
 
@@ -134,6 +146,7 @@ class ApplicationViewModel @Inject constructor(
                     fireBaseUser.currentUser?.uid?.let {
                         mutableSignUpComplete.value = true;
                         getUserData(it);
+
                     }
                 } else {
                     handleException(it.exception, customMessage = "Log in failed")
@@ -189,6 +202,7 @@ class ApplicationViewModel @Inject constructor(
 
 
     fun getUserData(authId: String) {
+
         inProgress.value = true;
         fireStoredb.collection(USER_NODE).document(authId).addSnapshotListener { value, error ->
             if (error != null) {
@@ -220,35 +234,64 @@ class ApplicationViewModel @Inject constructor(
         mutableStateOfEventObject.value = Event<String>(message);
         inProgress.value = false;
 
+        println(errorMessage)
+        println(message)
+
 
     }
 
 
     fun uploadProfileImage(uri: Uri) {
+        viewModelScope.launch {
+            uploadImage(uri) { publicUrl ->
+                // Switch to the main thread if needed
 
-        uploadImage(uri) {
-            createOrUpdateUser(uri.toString());
-        }
-
-    }
-
-    fun uploadImage(uri: Uri, onSuccess: (Uri) -> Unit) {
-        inProgress.value = false
-        val storageRef = firebaseImageStorage.reference
-        Log.d("DEBUG", "User ID: ${mutableUserDataObject.value?.userId}")
-
-        val imageRef =
-            storageRef.child("User/${mutableUserDataObject.value?.userId}/profilePicture.jpg") // Updated reference
-        val uploadTask = imageRef.putFile(uri)
-        uploadTask.addOnSuccessListener {
-            val result = it.metadata?.reference?.downloadUrl
-            result?.addOnSuccessListener(onSuccess)
-            inProgress.value = false
-        }.addOnFailureListener {
-            println("the handleexception function in the uploadimage just ran")
-            handleException(it)
+                createOrUpdateUser(imageUrl = publicUrl)
+            }
         }
     }
+
+
+    suspend fun uploadImage(uri: Uri, onSuccess: (String) -> Unit) {
+        return withContext(Dispatchers.IO) {
+            val fileName = UUID.randomUUID().toString()
+            val response = supabaseClient.storage
+                .from("AnyUserBucket")
+                .upload(fileName, uri)
+
+
+            // Get the public URL
+            val publicUrl = supabaseClient.storage
+                .from("AnyUserBucket")
+                .publicUrl(response.path)
+            onSuccess.invoke(publicUrl)
+            println(publicUrl)
+
+        }
+    }
+
+
+//    fun uploadImage(uri: Uri, onSuccess: (Uri) -> Unit) {
+//        inProgress.value = false
+//
+//        val response = supabaseClient.storage
+//            .from("ChattingApplicationUserBucket")
+//
+//        val storageRef = firebaseImageStorage.reference
+//        Log.d("DEBUG", "User ID: ${mutableUserDataObject.value?.userId}")
+//
+//        val imageRef =
+//            storageRef.child("User/${mutableUserDataObject.value?.userId}/profilePicture.jpg") // Updated reference
+//        val uploadTask = imageRef.putFile(uri)
+//        uploadTask.addOnSuccessListener {
+//            val result = it.metadata?.reference?.downloadUrl
+//            result?.addOnSuccessListener(onSuccess)
+//            inProgress.value = false
+//        }.addOnFailureListener {
+//            println("the handleexception function in the uploadimage just ran")
+//            handleException(it)
+//        }
+//    }
 
     fun logout() {
         fireBaseUser.signOut()
@@ -373,10 +416,12 @@ class ApplicationViewModel @Inject constructor(
     }
 
     fun uploadStatus(uri: Uri) {
-        uploadImage(
-            uri
-        ) {
-            createStatus(it.toString())
+        viewModelScope.launch {
+            uploadImage(
+                uri
+            ) {
+                createStatus(it.toString())
+            }
         }
     }
 
@@ -396,7 +441,7 @@ class ApplicationViewModel @Inject constructor(
 
     fun populateStatus() {
 //   *  after 24 hours the status should be removed
-        val timeDelta = 24L *60 *60 *1000
+        val timeDelta = 24L * 60 * 60 * 1000
         val cutOff = System.currentTimeMillis() - timeDelta
         inProgressStatus.value = true;
         fireStoredb.collection(CHATS).where(
@@ -420,14 +465,15 @@ class ApplicationViewModel @Inject constructor(
                         currentConnections.add(chat.user1.userId)
                     }
 
-                    fireStoredb.collection(STATUS).whereGreaterThan("timeStamp",cutOff).whereIn("user.userId", currentConnections)
+                    fireStoredb.collection(STATUS).whereGreaterThan("timeStamp", cutOff)
+                        .whereIn("user.userId", currentConnections)
                         .addSnapshotListener { value, error ->
                             if (error != null) {
                                 handleException(error)
                             }
                             if (value != null) {
-                                status.value= value.toObjectsKtx()
-                                inProgress.value=false;
+                                status.value = value.toObjectsKtx()
+                                inProgress.value = false;
                             }
                         }
                 }
@@ -438,3 +484,5 @@ class ApplicationViewModel @Inject constructor(
 
 
 }
+
+

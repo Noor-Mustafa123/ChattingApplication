@@ -42,13 +42,13 @@ sealed class ScreenRoutes(var route: String) {
 }
 
 
-//Supabase api Client
-val supabase = createSupabaseClient(
-    supabaseUrl = "https://xyzcompany.supabase.co",
-    supabaseKey = "your_public_anon_key"
-) {
-    install(Postgrest)
-}
+////Supabase api Client
+//val supabase = createSupabaseClient(
+//    supabaseUrl = "https://xyzcompany.supabase.co",
+//    supabaseKey = "your_public_anon_key"
+//) {
+//    install(Postgrest)
+//}
 
 
 @AndroidEntryPoint
