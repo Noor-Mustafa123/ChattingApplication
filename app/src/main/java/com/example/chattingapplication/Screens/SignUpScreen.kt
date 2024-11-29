@@ -60,7 +60,7 @@ fun SignUpScreenComposable(navController: NavController, viewModel: ApplicationV
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.sofa),
+            painter = painterResource(id = R.drawable.speak),
             contentDescription = null,
             modifier = Modifier
                 .width(200.dp)

@@ -57,7 +57,7 @@ class ApplicationViewModel @Inject constructor(
     val supabaseClient: SupabaseClient
 ) : ViewModel() {
 
-
+    var bugFixChatId = mutableStateOf("");
     // create two variables for the event object and for the inProgressStatus
     var inProgressChats = mutableStateOf(false);
     var inProgress = mutableStateOf(false);
@@ -270,29 +270,6 @@ class ApplicationViewModel @Inject constructor(
         }
     }
 
-
-//    fun uploadImage(uri: Uri, onSuccess: (Uri) -> Unit) {
-//        inProgress.value = false
-//
-//        val response = supabaseClient.storage
-//            .from("ChattingApplicationUserBucket")
-//
-//        val storageRef = firebaseImageStorage.reference
-//        Log.d("DEBUG", "User ID: ${mutableUserDataObject.value?.userId}")
-//
-//        val imageRef =
-//            storageRef.child("User/${mutableUserDataObject.value?.userId}/profilePicture.jpg") // Updated reference
-//        val uploadTask = imageRef.putFile(uri)
-//        uploadTask.addOnSuccessListener {
-//            val result = it.metadata?.reference?.downloadUrl
-//            result?.addOnSuccessListener(onSuccess)
-//            inProgress.value = false
-//        }.addOnFailureListener {
-//            println("the handleexception function in the uploadimage just ran")
-//            handleException(it)
-//        }
-//    }
-
     fun logout() {
         fireBaseUser.signOut()
         userSignedIn.value = false
@@ -343,14 +320,15 @@ class ApplicationViewModel @Inject constructor(
                     it.toObject<ChatData>()
                 }
                 inProgressChats.value = false;
+
             }
         }
 
     }
 
     fun onAddChatClick(number: String) {
-        if (number.isEmpty() or !number.first().isDigit()) {
-
+        if (number.isEmpty() or number.first().isDigit()) {
+    println("the is number check is being passed")
             fireStoredb.collection(CHATS).where(
                 Filter.or(
                     Filter.and(
@@ -364,30 +342,32 @@ class ApplicationViewModel @Inject constructor(
                 )
             ).get().addOnSuccessListener {
                 if (it.isEmpty) {
-
+                    println("on add chat click first successCondition has been triggered")
                     fireStoredb.collection(USER_NODE).whereEqualTo("number", number).get()
                         .addOnSuccessListener { it1 ->
                             if (it1.isEmpty) {
                                 handleException(customMessage = "number not found")
                             } else {
+                                println("on add chat click second successCondition has been triggered")
 // !! the bugs caused in this proejct might be because of the misuse of hte toObject and toObjects method in this project
                                 var chatPartner = it1.toObjectsKtx<UserProfileModel>()[0]
                                 var id = fireStoredb.collection(CHATS).document().id;
                                 var chat = ChatData(
                                     chatId = id,
                                     ChatUser(
-                                        mutableUserDataObject.value?.userId,
-                                        mutableUserDataObject.value?.name,
-                                        mutableUserDataObject.value?.number,
-                                        mutableUserDataObject.value?.imageUrl
+                                      userId =   mutableUserDataObject.value?.userId,
+                                     name =    mutableUserDataObject.value?.name,
+                                      number =   mutableUserDataObject.value?.number,
+                                      imageUrl =   mutableUserDataObject.value?.imageUrl
                                     ),
                                     ChatUser(
-                                        chatPartner.userId,
-                                        chatPartner.name,
-                                        chatPartner.number,
-                                        chatPartner.imageUrl
+                                     userId =    chatPartner.userId,
+                                     name =    chatPartner.name,
+                                     number =    chatPartner.number,
+                                       imageUrl =  chatPartner.imageUrl
                                     )
                                 )
+                                println(chat.toString())
 
                                 fireStoredb.collection(CHATS).document(id).set(chat);
 
@@ -399,9 +379,14 @@ class ApplicationViewModel @Inject constructor(
                         }
 
                 }
+            }.addOnFailureListener {
+                println("on add chat click first failureCondition has been triggered")
             }
 
 
+        }
+        else{
+            println("the number check condition has failed")
         }
     }
 

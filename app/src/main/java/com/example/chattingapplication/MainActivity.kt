@@ -37,7 +37,7 @@ sealed class ScreenRoutes(var route: String) {
 
     object StatusListRoute : ScreenRoutes("StatusListRoute");
     object SingleStatusRoute : ScreenRoutes("SingleStatusRoute/{chatId}") {
-        fun createRoute(id: String) = "singleStatus/$id";
+        fun createRoute(id: String ) = "singleStatus/$id";
     }
 }
 
@@ -78,15 +78,20 @@ fun applicationNavigation() {
             SignUpScreenComposable(navController, viewModel);
         }
         composable(route = ScreenRoutes.SingleChatRoute.route) {
-            var chatId = it.arguments?.getString("chatId")
-            chatId.let {
-                if (chatId != null) {
+//            val chatId = it.arguments?.getString("chatId")
+//            ALTERNATE WAY TO GET CHATID
+            val chatId = viewModel.bugFixChatId.value
+            println("single chat route composable has been triggered")
+            chatId?.let {
+
+                println(chatId)
                     SingleChatScreenComposable(
                         chatId = chatId,
                         viewModel = viewModel,
                         navController = navController
                     )
-                }
+
+
             }
 
         }

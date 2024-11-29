@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -34,9 +35,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.chattingapplication.Models.Message
+import com.example.chattingapplication.ScreenRoutes
+import com.example.chattingapplication.Utilites.UtilityComposables.CommonRow
+import com.example.chattingapplication.Utilites.UtilityComposables.CommonScreenTitle
 import com.example.chattingapplication.Utilites.UtilityComposables.DividerCommon
 import com.example.chattingapplication.Utilites.UtilityComposables.ImageCommon
 import com.example.chattingapplication.ViewModels.ApplicationViewModel
+import com.example.chattingapplication.ui.BottomNavigationItem
+import com.example.chattingapplication.ui.BottomNavigationMenu
 
 @Composable
 fun SingleChatScreenComposable(
@@ -55,32 +61,46 @@ fun SingleChatScreenComposable(
 
     }
     val myUser = viewModel.mutableUserDataObject.value
+    println(viewModel.chats.value)
+    println(chatId)
     val currentChat = viewModel.chats.value.first { it.chatId == chatId }
     val chatUser =
         if (myUser?.userId == currentChat.user1.userId) currentChat.user2 else currentChat.user1
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.populateMessages(chatId)
-    }
 
-    BackHandler {
-        viewModel.depopulateMessage()
-    }
 
-    Column {
-        ChatHeader(name = chatUser.name ?: "", imageUrl = chatUser.imageUrl ?: "") {
-            navController.popBackStack()
-            viewModel.depopulateMessage()
+    Scaffold(
+        bottomBar = {
+            ReplyBox(reply = reply, onReplyChange = { reply = it }, onSendReply = onSendReply)
+        }
+    ) { innerPadding ->
+        // Screen content with padding
+        Column(modifier = Modifier.padding(innerPadding)) {
+
+
+            LaunchedEffect(key1 = Unit) {
+                viewModel.populateMessages(chatId)
+            }
+
+            BackHandler {
+                viewModel.depopulateMessage()
+            }
+
+            Column {
+                ChatHeader(name = chatUser.name ?: "", imageUrl = chatUser.imageUrl ?: "") {
+                    navController.popBackStack()
+                    viewModel.depopulateMessage()
+                }
+            }
+
+            MessageBox(
+                modifier = Modifier,
+                chatMessages = viewModel.chatMessages.value,
+                currentUserId = myUser?.userId ?: ""
+            )
+//            ReplyBox(reply = reply, onReplyChange = { reply = it }, onSendReply = onSendReply)
         }
     }
-
-    MessageBox(
-        modifier = Modifier,
-        chatMessages = viewModel.chatMessages.value,
-        currentUserId = myUser?.userId ?: ""
-    )
-    ReplyBox(reply = reply, onReplyChange = { reply = it }, onSendReply = onSendReply)
-
 }
 
 
@@ -158,3 +178,11 @@ fun ReplyBox(reply: String, onReplyChange: (String) -> Unit, onSendReply: () -> 
         }
     }
 }
+
+
+
+
+
+
+
+
