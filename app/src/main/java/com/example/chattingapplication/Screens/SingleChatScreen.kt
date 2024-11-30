@@ -35,14 +35,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.chattingapplication.Models.Message
-import com.example.chattingapplication.ScreenRoutes
-import com.example.chattingapplication.Utilites.UtilityComposables.CommonRow
-import com.example.chattingapplication.Utilites.UtilityComposables.CommonScreenTitle
 import com.example.chattingapplication.Utilites.UtilityComposables.DividerCommon
 import com.example.chattingapplication.Utilites.UtilityComposables.ImageCommon
 import com.example.chattingapplication.ViewModels.ApplicationViewModel
-import com.example.chattingapplication.ui.BottomNavigationItem
-import com.example.chattingapplication.ui.BottomNavigationMenu
+
+
+//Bug all of the items on the single chat screen are showing on the left side
+
 
 @Composable
 fun SingleChatScreenComposable(
@@ -104,12 +103,14 @@ fun SingleChatScreenComposable(
 }
 
 
+
 @Composable
 fun MessageBox(modifier: Modifier, chatMessages: List<Message>, currentUserId: String) {
     LazyColumn(modifier = modifier) {
         items(chatMessages) { msg ->
-            Column {
+
                 val alignment = if (msg.sendBy == currentUserId) Alignment.End else Alignment.Start
+
                 val color =
                     if (msg.sendBy == currentUserId) Color(0xFF68C400) else Color(0xFFC0C0C0)
                 Column(
@@ -117,8 +118,7 @@ fun MessageBox(modifier: Modifier, chatMessages: List<Message>, currentUserId: S
                         .fillMaxWidth()
                         .padding(8.dp),
                     horizontalAlignment = alignment
-                ) { }
-                Text(
+                ) { Text(
                     text = msg.message ?: "",
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
@@ -126,8 +126,9 @@ fun MessageBox(modifier: Modifier, chatMessages: List<Message>, currentUserId: S
                         .padding(12.dp),
                     color = Color.White,
                     fontWeight = FontWeight.Bold
-                )
-            }
+                )}
+
+
         }
     }
 }

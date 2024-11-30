@@ -289,10 +289,12 @@ class ApplicationViewModel @Inject constructor(
                         handleException(error)
 
                     }
+//* The chatMessages list gets a list of sorted Message objects.
                     if (value != null) {
                         chatMessages.value = value.documents.mapNotNull {
                             it.toObject<Message>()
                         }.sortedBy { it.timestamp }
+                        println(chatMessages.value)
                         inProgressChatMessage.value = false;
                     }
 
