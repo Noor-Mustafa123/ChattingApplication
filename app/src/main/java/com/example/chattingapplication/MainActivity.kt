@@ -82,7 +82,7 @@ fun applicationNavigation() {
 //            ALTERNATE WAY TO GET CHATID
             val chatId = viewModel.bugFixChatId.value
             println("single chat route composable has been triggered")
-            chatId?.let {
+            chatId.let {
 
                 println(chatId)
                     SingleChatScreenComposable(
@@ -108,15 +108,15 @@ fun applicationNavigation() {
             StatusScreenComposable(viewModel, navController);
         }
         composable(route = ScreenRoutes.SingleStatusRoute.route) {
-            var statusId = it.arguments?.getString("chatId")
+            var statusId = viewModel.bugFixStatusId.value
+            println("single status route composable has been triggered")
+            println(statusId)
             statusId.let {
-                if (statusId != null) {
-                    SingleStatusScreenComposable(
-                        statusId = statusId,
-                        viewModel = viewModel,
-                        navController = navController
-                    )
-                }
+                SingleStatusScreenComposable(
+                    statusId = statusId,
+                    viewModel = viewModel,
+                    navController = navController
+                )
             }
 
         }

@@ -25,9 +25,7 @@ data class ChatData(
 //    dont understand this expression
     val user1: ChatUser = ChatUser(),
     val user2: ChatUser = ChatUser()
-) {
-
-}
+)
 
 data class ChatUser(
     val userId: String? = "",
@@ -46,7 +44,7 @@ data class Status(
     val user: ChatUser = ChatUser(),
     val imageUrl: String? = "",
     val timeStamp: Long?
-) {
-
-
+){
+    // No-argument constructor required for Firebase deserialization
+    constructor() : this(ChatUser(), null, 0)
 }

@@ -56,7 +56,7 @@ class ApplicationViewModel @Inject constructor(
     val firebaseImageStorage: FirebaseStorage,
     val supabaseClient: SupabaseClient
 ) : ViewModel() {
-
+    var bugFixStatusId = mutableStateOf("");
     var bugFixChatId = mutableStateOf("");
     // create two variables for the event object and for the inProgressStatus
     var inProgressChats = mutableStateOf(false);

@@ -81,14 +81,22 @@ fun StatusScreenComposable(viewModel: ApplicationViewModel, navController: NavCo
                                 imageUrl = myStatuses[0].user.imageUrl,
                                 name = myStatuses[0].user.name
                             ) {
-                                navController.navigate(ScreenRoutes.SingleStatusRoute.createRoute(id = myStatuses[0].user.userId!!))
+                                viewModel.bugFixStatusId.value = myStatuses[0].user.userId!!
+                                println(viewModel.bugFixStatusId.value)
+                                println("print statment")
+                                ScreenRoutes.SingleStatusRoute.createRoute(myStatuses[0].user.userId!!)
+                                navController.navigate(ScreenRoutes.SingleStatusRoute.route)
                             }
                             DividerCommon()
                             val uniqueUsers = otherStatuses.map { it.user }.toSet().toList()
                             LazyColumn(modifier = Modifier.weight(1f)) {
                                 items(uniqueUsers) { user ->
                                     CommonRow(imageUrl = user.imageUrl, name = user.name){
-                                        navController.navigate(ScreenRoutes.SingleStatusRoute.createRoute(user.userId!!))
+                                        viewModel.bugFixStatusId.value = user.userId!!
+                                        println(viewModel.bugFixStatusId.value)
+                                        println("print statment")
+                                        ScreenRoutes.SingleStatusRoute.createRoute(user.userId)
+                                        navController.navigate(ScreenRoutes.SingleStatusRoute.route)
                                     }
                                 }
                             }
