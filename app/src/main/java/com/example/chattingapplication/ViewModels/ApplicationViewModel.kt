@@ -31,6 +31,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.storage.storage
 import io.github.jan.supabase.storage.upload
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.internal.wait
@@ -399,7 +400,6 @@ class ApplicationViewModel @Inject constructor(
         fireStoredb.collection(CHATS).document(chatId).collection(MESSAGE).document()
             .set(message);
 
-
     }
 
     fun uploadStatus(uri: Uri) {
@@ -424,6 +424,9 @@ class ApplicationViewModel @Inject constructor(
             timeStamp = System.currentTimeMillis()
         )
         fireStoredb.collection(STATUS).document().set(newStatus)
+
+        populateStatus()
+
     }
 
     fun populateStatus() {
