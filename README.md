@@ -64,7 +64,8 @@ Add screenshots for:
 </p>
 6. Status updates  
  <p align="center">
-  <img src="https://github.com/user-attachments/assets/50fd5f0f-2d96-4d35-bb4a-842cbf9b21a8" width="200"/>
+  <img src="https://github.com/user-attachments/assets/6e81b764-836c-4aad-a59d-6af170f45a3b" width="200"/>
+    <img src="https://github.com/user-attachments/assets/f6db73dd-e25e-4ed2-b354-c6042d81f084" width="200"/>
 </p>
 7. Profile management  
  <p align="center">
